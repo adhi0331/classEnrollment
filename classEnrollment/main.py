@@ -8,16 +8,19 @@ def getURL():
 
 
 #Create a function that returns waitlst/enrollment count for any URL
-def getCount(URL):
-    result = requests.get(URL)
+def getCount(URL,x):
+    result = requests.get(URL+x)
     soup = bs4.BeautifulSoup(result.text, "lxml")
-    for item in soup:
-        print(type(item))
+    
+    sectionTexts = soup.select(".sectxt")
+    
+    for section in sectionTexts:
+        if section.contents[5].text.strip() == x:
+           print(section.contents[21].text.strip()) 
+    
 
-    siteTables = soup.select(".ertext")
-    print(siteTables[3].text)
+x = input("Enter course code: ")
 
-getCount("https://act.ucsd.edu/scheduleOfClasses/scheduleOfClassesStudentResult.htm?selectedTerm=WI22&tabNum=tabs-sec&sections=66040")
-print("Hello")
-#"https://act.ucsd.edu/scheduleOfClasses/scheduleOfClassesStudentResult.htm?selectedTerm=WI22&tabNum=tabs-sec&sections=66040"
-#45
+getCount("https://act.ucsd.edu/scheduleOfClasses/scheduleOfClassesStudentResult.htm?selectedTerm=WI22&tabNum=tabs-sec&sections=",x)
+
+
