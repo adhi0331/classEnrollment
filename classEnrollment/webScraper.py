@@ -2,7 +2,7 @@
 import requests
 import bs4
 
-mainURL = "https://act.ucsd.edu/scheduleOfClasses/scheduleOfClassesStudentResult.htm?selectedTerm=WI22&tabNum=tabs-sec&sections="
+mainURL = "https://act.ucsd.edu/scheduleOfClasses/scheduleOfClassesStudentResult.htm?selectedTerm=SP22&tabNum=tabs-sec&sections="
 
 #Create a function that gets the URL for the specific course
 def getURL():

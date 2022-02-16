@@ -8,7 +8,6 @@ class InstaBot:
         self.username = username
         self.pw = pw
         self.requestList = []
-        #A global requests dictionary (time request was made, account, course code, time interval)
     
     def login(self):
         self.driver.get("https://www.instagram.com")
@@ -34,30 +33,51 @@ class InstaBot:
         sleep(2)
         messages = self.driver.find_element_by_xpath('//*[@id="react-root"]/section/div/div[2]/div/div/div[2]/div[2]/div/div[1]/div').text.lower()
         print(messages)
-        messageList = messages.split("!") #Have to enter message in format !0ID00,1
+        messageList = messages.split("!") #Have to enter message in format !0ID00,0,00
         print(messageList)
         for message in messageList:
-            if len(message) == 7:
+            if message == "stop":
+                self.driver.close()
+                return False
+            if len(message) == 10:
                 self.requestList.append(message)
                 self.driver.find_element_by_xpath('//*[@id="react-root"]/section/div/div[2]/div/div/div[2]/div[2]/div/div[2]/div/div/div[2]').send_keys("confirmed")
                 self.driver.find_element_by_xpath('//*[@id="react-root"]/section/div/div[2]/div/div/div[2]/div[2]/div/div[2]/div/div/div[3]').click()
-        
+                
         sleep(2) 
+        return True
 
     #Create a function that returns the time of day
+    def checkTime(self):
+        now = datetime.now()
+        currentHour = int(now.strftime("%H"))
+        currentTime = int(now.strftime("%M"))
+        return currentHour, currentTime 
+    
+    #the getCount and return count method here
 
-    #Create a function that iterates through time request was made/time interval and checks if the current time matches is within the time interval
-    # if it is within the time interval, then run getCount() on the request and send a DM to respective account
-    # needs to be run every second
+    def returnCount(self):
+        for request in self.requestList:
+            components = request.split(',')
+            count = getCount(mainURL, components[0])
+            count.replace(" ", "")
+            for index,letter in enumerate(count):
+                self.driver.find_element_by_xpath('//*[@id="react-root"]/section/div/div[2]/div/div/div[2]/div[2]/div/div[2]/div/div/div[2]').send_keys(letter)
+                self.driver.find_element_by_xpath('//*[@id="react-root"]/section/div/div[2]/div/div/div[2]/div[2]/div/div[2]/div/div/div[2]').click()
+            
+            self.driver.find_element_by_xpath('//*[@id="react-root"]/section/div/div[2]/div/div/div[2]/div[2]/div/div[2]/div/div/div[3]').click()
+            self.requestList.remove(request)
 
+        
 
-username = input("Enter username: ")
-pw = input("Enter password: ")
-stewie = InstaBot(username, pw)
+#username = input("Enter username: ")
+#pw = input("Enter password: ")
+stewie = InstaBot("stewie_thefriend", "Stewie123")
 stewie.login()
-stewie.checkDM()
-print(stewie.requestList)
-stewie.driver.close()
+while (stewie.checkDM() == True):
+    if len(stewie.requestList) >= 1:
+        stewie.returnCount()
+    
 
 
 
